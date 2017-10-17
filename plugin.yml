@@ -1,7 +1,7 @@
 name: MagicWE
 main: MagicWE\Main
 version: 0.2.7
-api: [3.0.0-ALPHA3,3.0.0-ALPHA9]
+api: [3.0.0-ALPHA3,3.0.0-ALPHA8, 3.0.0-ALPHA9]
 load: STARTUP
 authors: [thebigsmileXD]
 description: WorldEdit with a magic touch
