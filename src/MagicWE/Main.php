@@ -52,31 +52,32 @@ class Main extends PluginBase implements Listener{
 		$this->getLogger()->info(TextFormat::GREEN . "MagicWE enabled!");
 	}
 
-	public function onCommand(CommandSender $sender, Command $command, $label, array $args){
+    public function onCommand(CommandSender $sender, Command $command, string $label, array $args) : bool{
 		if($sender instanceof Player){
 			switch($command){
 				case "/help":
 				{
 					$sender->sendMessage("首先要找power777888申请OP权限\n//set 方块ID   填充方块\n//wand   开/关法杖功能\n//replace 需要被替换的方块的ID 替换成哪个方块的ID   替换方块\n//pos1   使用指令设置第一个点\n//pos2   使用指令设置第二个点\n//undo   撤回上一次的操作\n//cyl 方块ID 半径   你的位置为中心点生成一个实心圆柱体\n//hcyl 方块ID 半径   你的位置为中心生成一个空心圆柱体\n//redo   //undo的反向指令\n//copy   把你选定的区域内的方块复制到“剪贴板”里（如果你是站在要复制的这个东西的左边输入//copy，那你要//paste的时候这个东西就在你的左边，其他的方向如此）\n//paste   把剪贴板里的建筑复制出来");
+                    return true;
 					break;
 				}
 
 				case "/pos1":
 					{
-						if(!$sender->hasPermission("we.command.pos1") && !$sender->hasPermission("we.command.admin")) return;
+						if(!$sender->hasPermission("we.command.pos1") && !$sender->hasPermission("we.command.admin")) return false;
 						$pos1x = $sender->getFloorX();
 						$pos1y = $sender->getFloorY();
 						$pos1z = $sender->getFloorZ();
 						$this->pos1[$sender->getName()] = new Vector3($pos1x, $pos1y, $pos1z);
 						if($pos1y > self::$MAX_BUILD_HEIGHT || $pos1y < 0) $sender->sendMessage(TextFormat::GOLD . "[MagicWE] Warning: You are above y:" . self::$MAX_BUILD_HEIGHT . " or below y:0");
 						$sender->sendMessage(TextFormat::GREEN . "[MagicWE] 点1已设置在 x:" . $pos1x . " y:" . $pos1y . " z:" . $pos1z);
-						return true;
+                        return true;
 						break;
 					}
 
 				case "/pos2":
 					{
-						if(!$sender->hasPermission("we.command.pos2") && !$sender->hasPermission("we.command.admin")) return;
+						if(!$sender->hasPermission("we.command.pos2") && !$sender->hasPermission("we.command.admin")) return false;
 						$pos2x = $sender->getFloorX();
 						$pos2y = $sender->getFloorY();
 						$pos2z = $sender->getFloorZ();
@@ -89,7 +90,7 @@ class Main extends PluginBase implements Listener{
 
 				case "/set":
 					{
-						if(!$sender->hasPermission("we.command.set") && !$sender->hasPermission("we.command.admin")) return;
+						if(!$sender->hasPermission("we.command.set") && !$sender->hasPermission("we.command.admin")) return false;
 						if(isset($args[0])){
 							if(isset($this->pos1[$sender->getName()], $this->pos2[$sender->getName()])){
 								$this->fill($sender, $args[0]);
@@ -100,12 +101,13 @@ class Main extends PluginBase implements Listener{
 						else{
 							$sender->sendMessage(TextFormat::RED . "[MagicWE] 填充失败");
 						}
+                        return true;
 						break;
 					}
 
 				case "/replace":
 					{
-						if(!$sender->hasPermission("we.command.replace") && !$sender->hasPermission("we.command.admin")) return;
+						if(!$sender->hasPermission("we.command.replace") && !$sender->hasPermission("we.command.admin")) return false;
 						if(isset($args[0]) && isset($args[1])){
 							if(isset($this->pos1[$sender->getName()], $this->pos2[$sender->getName()])){
 								$this->replace($sender, $args[0], $args[1]);
@@ -116,22 +118,24 @@ class Main extends PluginBase implements Listener{
 						else{
 							$sender->sendMessage(TextFormat::RED . "[MagicWE] 替换失败");
 						}
+                        return true;
 						break;
 					}
 
 				case "/copy":
 					{
-						if(!$sender->hasPermission("we.command.copy") && !$sender->hasPermission("we.command.admin")) return;
+						if(!$sender->hasPermission("we.command.copy") && !$sender->hasPermission("we.command.admin")) return false;
 						if(isset($this->pos1[$sender->getName()], $this->pos2[$sender->getName()])){
 							$this->copy($sender);
 							return true;
 						}
+                        return true;
 						break;
 					}
 
 				case "/paste":
 					{
-						if(!$sender->hasPermission("we.command.paste") && !$sender->hasPermission("we.command.admin")) return;
+						if(!$sender->hasPermission("we.command.paste") && !$sender->hasPermission("we.command.admin")) return false;
 						if(isset($this->pos1[$sender->getName()], $this->pos2[$sender->getName()])){
 							$this->paste($sender);
 							$sender->getLevel()->doChunkGarbageCollection();
@@ -142,7 +146,7 @@ class Main extends PluginBase implements Listener{
 
 					case "/stack":
 						{
-							if(!$sender->hasPermission("we.command.stack") && !$sender->hasPermission("we.command.admin")) return;
+							if(!$sender->hasPermission("we.command.stack") && !$sender->hasPermission("we.command.admin")) return false;
 
 							$yaw = $sender->getYaw();
 							$pitch = $sender->getPitch();
@@ -168,7 +172,7 @@ class Main extends PluginBase implements Listener{
 
 				case "/undo":
 					{
-						if(!$sender->hasPermission("we.command.undo") && !$sender->hasPermission("we.command.admin")) return;
+						if(!$sender->hasPermission("we.command.undo") && !$sender->hasPermission("we.command.admin")) return false;
 						if(!empty($this->undo[$sender->getName()])){
 							$this->undo($sender);
 							$sender->getLevel()->doChunkGarbageCollection();
@@ -182,7 +186,7 @@ class Main extends PluginBase implements Listener{
 
 				case "/redo":
 					{
-						if(!$sender->hasPermission("we.command.redo") && !$sender->hasPermission("we.command.admin")) return;
+						if(!$sender->hasPermission("we.command.redo") && !$sender->hasPermission("we.command.admin")) return false;
 						if(!empty($this->redo[$sender->getName()])){
 							$this->redo($sender);
 							$sender->getLevel()->doChunkGarbageCollection();
@@ -196,7 +200,7 @@ class Main extends PluginBase implements Listener{
 
 				case "/flip":
 					{
-						if(!$sender->hasPermission("we.command.flip") && !$sender->hasPermission("we.command.admin")) return;
+						if(!$sender->hasPermission("we.command.flip") && !$sender->hasPermission("we.command.admin")) return false;
 						if(!empty($this->copy[$sender->getName()]) && isset($args[0])){
 							if(!in_array($args[0], array("x", "y", "z"))) return false;
 							$this->flip($sender, $args[0]);
@@ -214,7 +218,7 @@ class Main extends PluginBase implements Listener{
 				case "toggleeditwand":
 				case "/wand":
 					{
-						if(!$sender->hasPermission("we.command.wand") && !$sender->hasPermission("we.command.admin")) return;
+						if(!$sender->hasPermission("we.command.wand") && !$sender->hasPermission("we.command.admin")) return false;
 						if(empty($this->wand[$sender->getName()]) || $this->wand[$sender->getName()] === 0){
 							$this->wand[$sender->getName()] = 1;
 							$sender->sendMessage(TextFormat::GREEN . "[MagicWE] 小木斧定位功能开启");
@@ -229,7 +233,7 @@ class Main extends PluginBase implements Listener{
 
 				case "/schem":
 					{
-						if(!$sender->hasPermission("we.command.schem") && !$sender->hasPermission("we.command.admin")) return;
+						if(!$sender->hasPermission("we.command.schem") && !$sender->hasPermission("we.command.admin")) return false;
 						if(empty($args) || empty($args[0]) || empty($args[1])){
 							$sender->sendMessage(TextFormat::RED . "[MagicWE] Invalid option");
 						}
@@ -272,7 +276,7 @@ class Main extends PluginBase implements Listener{
 
 				case "/cyl":
 					{
-						if(!$sender->hasPermission("we.command.cyl") && !$sender->hasPermission("we.command.admin")) return;
+						if(!$sender->hasPermission("we.command.cyl") && !$sender->hasPermission("we.command.admin")) return false;
 						if(isset($args[0], $args[1])){
 							#$this->fill($sender, $args[0]);
 							$this->W_cylinder($sender, $sender->getPosition(), $args[0], $args[1], $args[2]??1);
@@ -282,12 +286,13 @@ class Main extends PluginBase implements Listener{
 						else{
 							$sender->sendMessage(TextFormat::RED . "[MagicWE] 生成失败");
 						}
+
 						break;
 					}
 
 				case "/hcyl":
 					{
-						if(!$sender->hasPermission("we.command.hcyl") && !$sender->hasPermission("we.command.admin")) return;
+						if(!$sender->hasPermission("we.command.hcyl") && !$sender->hasPermission("we.command.admin")) return false;
 						if(isset($args[0], $args[1])){
 							#$this->fill($sender, $args[0]);
 							$this->W_holocylinder($sender, $sender->getPosition(), $args[0], $args[1], $args[2]??1);
@@ -307,6 +312,7 @@ class Main extends PluginBase implements Listener{
 		}
 		else{
 			$sender->sendMessage(TextFormat::RED . "[MagicWE] This command must be used in-game");
+            return false;
 		}
 		return false;
 	}
